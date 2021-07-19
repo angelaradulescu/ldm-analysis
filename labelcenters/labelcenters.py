@@ -16,7 +16,7 @@ def click_event(event, x, y, flags, params):
   
         # displaying the coordinates
         # on the Shell
-        print(x, ' ', y)
+        # print(x, ' ', y)
   
         # displaying the coordinates
         # on the image window
@@ -24,11 +24,11 @@ def click_event(event, x, y, flags, params):
         # cv2.putText(img, str(x) + ',' + str(y), (x,y), font, 1, (255, 0, 0), 2)
 
         # draw a circle over the center of the radius
-        cv2.circle(img, (x,y), radius=5, color=(0, 0, 255), thickness=-1)
+        cv2.circle(img, (x+81,y+81), radius=5, color=(0, 0, 255), thickness=-1)
 
         # draw a rectangle the size of the ROI
-        # cv2.rectangle(img, (x,y), (x+162,y+162), color=(0, 0, 255), thickness=1)
-        cv2.rectangle(img, (x-81,y-81), (x+81,y+81), color=(0, 0, 255), thickness=5)
+        cv2.rectangle(img, (x,y), (x+162,y+162), color=(0, 0, 255), thickness=1)
+        # cv2.rectangle(img, (x-81,y-81), (x+81,y+81), color=(0, 0, 255), thickness=5)
 
         # show image
         cv2.imshow('image', img)
@@ -59,8 +59,8 @@ if __name__=="__main__":
     output_filename = input_image.split(".")[0] + "_labeled_" + initials + ".png"
 
     # let the user know how to label
-    print("Click at the center of where the ROI should be. \n Select ROIs left to right, up to down (starting from top left and ending at bottom right). \n")
-    # print("Click at the top left corner of where the ROI should begin.")
+    # print("Click at the center of where the ROI should be. \n Select ROIs left to right, up to down (starting from top left and ending at bottom right). \n")
+    print("Click at the top left corner of where the ROI should begin. \n Select ROIs left to right, up to down (starting from top left and ending at bottom right). \n")
 
     # let the user know how to exit
     print("Exit by hitting any key on the keyboard.")
