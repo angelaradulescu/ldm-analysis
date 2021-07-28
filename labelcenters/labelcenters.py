@@ -12,6 +12,8 @@ global aoispacelength
 aoisidelength = 162
 aoispacelength = 10       
 
+global corb
+
 # function to display the coordinates of
 # of the points clicked on the image 
 def click_event(event, x, y, flags, params):
@@ -28,35 +30,47 @@ def click_event(event, x, y, flags, params):
         # font = cv2.FONT_HERSHEY_SIMPLEX
         # cv2.putText(img, str(x) + ',' + str(y), (x,y), font, 1, (255, 0, 0), 2)
 
-        # draw a circle over the center of the radius
-        cv2.circle(img, (x+(aoisidelength//2),y+(aoisidelength//2)), radius=5, color=(0, 0, 255), thickness=-1)
+        if bool(int(corb)):
+            # draw a circle over the center of the radius
+            cv2.circle(img, (x+(aoisidelength//2),y+(aoisidelength//2)), radius=5, color=(0, 0, 255), thickness=-1)
 
-        # draw a rectangle the size of the ROI
-        cv2.rectangle(img, (x,y), (x+aoisidelength,y+aoisidelength), color=(0, 0, 255), thickness=1)
+            # draw a rectangle the size of the ROI
+            cv2.rectangle(img, (x,y), (x+aoisidelength,y+aoisidelength), color=(0, 0, 255), thickness=1)
 
-        # save click to dict, first name click ordinally, then assign tuple to click
-        clickname = "click" + str(len(clickdict))
-        clickdict[clickname] = (x,y)
+            # save click to dict, first name click ordinally, then assign tuple to click
+            clickname = "click" + str(len(clickdict))
+            clickdict[clickname] = (x,y)
 
-        x1,y1 = x, y+aoisidelength+aoispacelength
+            x1,y1 = x, y+aoisidelength+aoispacelength
 
-        cv2.circle(img, (x1+(aoisidelength//2),y1+(aoisidelength//2)), radius=5, color=(0, 0, 255), thickness=-1)
+            cv2.circle(img, (x1+(aoisidelength//2),y1+(aoisidelength//2)), radius=5, color=(0, 0, 255), thickness=-1)
 
-        cv2.rectangle(img, (x1,y1), (x1+aoisidelength,y1+aoisidelength), color=(0, 0, 255), thickness=1)
+            cv2.rectangle(img, (x1,y1), (x1+aoisidelength,y1+aoisidelength), color=(0, 0, 255), thickness=1)
 
-        # save click to dict, first name click ordinally, then assign tuple to click
-        clickname = "click" + str(len(clickdict))
-        clickdict[clickname] = (x1,y1)
+            # save click to dict, first name click ordinally, then assign tuple to click
+            clickname = "click" + str(len(clickdict))
+            clickdict[clickname] = (x1,y1)
 
-        x2,y2 = x1, y1+aoisidelength+aoispacelength
-        
-        cv2.circle(img, (x2+(aoisidelength//2),y2+(aoisidelength//2)), radius=5, color=(0, 0, 255), thickness=-1)
+            x2,y2 = x1, y1+aoisidelength+aoispacelength
+            
+            cv2.circle(img, (x2+(aoisidelength//2),y2+(aoisidelength//2)), radius=5, color=(0, 0, 255), thickness=-1)
 
-        cv2.rectangle(img, (x2,y2), (x2+aoisidelength,y2+aoisidelength), color=(0, 0, 255), thickness=1)
+            cv2.rectangle(img, (x2,y2), (x2+aoisidelength,y2+aoisidelength), color=(0, 0, 255), thickness=1)
 
-        # save click to dict, first name click ordinally, then assign tuple to click
-        clickname = "click" + str(len(clickdict))
-        clickdict[clickname] = (x2,y2)
+            # save click to dict, first name click ordinally, then assign tuple to click
+            clickname = "click" + str(len(clickdict))
+            clickdict[clickname] = (x2,y2)
+
+        else:
+            # draw a circle over the center of the radius
+            cv2.circle(img, (x+(aoisidelength//2),y+(aoisidelength//2)), radius=5, color=(0, 0, 255), thickness=-1)
+
+            # draw a rectangle the size of the ROI
+            cv2.rectangle(img, (x,y), (x+aoisidelength,y+aoisidelength), color=(0, 0, 255), thickness=1)
+
+            # save click to dict, first name click ordinally, then assign tuple to click
+            clickname = "click" + str(len(clickdict))
+            clickdict[clickname] = (x,y)
 
         # cv2.rectangle(img, (x-81,y-81), (x+81,y+81), color=(0, 0, 255), thickness=5)
 
@@ -73,6 +87,8 @@ if __name__=="__main__":
     initials = input("Enter your initials: \n")
 
     input_image = input("Enter the name of the image you'd like to label: \n")
+
+    corb = input("Columnwise (1) or blockwise (0)? \n")
 
     # reading the image
     img = cv2.imread(input_image, 1)
