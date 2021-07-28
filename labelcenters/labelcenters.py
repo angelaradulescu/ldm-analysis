@@ -10,7 +10,7 @@ global aoisidelength
 global aoispacelength
 
 aoisidelength = 162
-aoispacelength = 10       
+aoispacelength = 1       
 
 global corb
 
