@@ -5,7 +5,12 @@ import pandas as pd
 # set global variable of click list to save to csv
 global clickdict
 clickdict = {}  
-       
+
+global aoisidelength
+global aoispacelength
+
+aoisidelength = 162
+aoispacelength = 10       
 
 # function to display the coordinates of
 # of the points clicked on the image 
@@ -24,18 +29,41 @@ def click_event(event, x, y, flags, params):
         # cv2.putText(img, str(x) + ',' + str(y), (x,y), font, 1, (255, 0, 0), 2)
 
         # draw a circle over the center of the radius
-        cv2.circle(img, (x+81,y+81), radius=5, color=(0, 0, 255), thickness=-1)
+        cv2.circle(img, (x+(aoisidelength//2),y+(aoisidelength//2)), radius=5, color=(0, 0, 255), thickness=-1)
 
         # draw a rectangle the size of the ROI
-        cv2.rectangle(img, (x,y), (x+162,y+162), color=(0, 0, 255), thickness=1)
+        cv2.rectangle(img, (x,y), (x+aoisidelength,y+aoisidelength), color=(0, 0, 255), thickness=1)
+
+        # save click to dict, first name click ordinally, then assign tuple to click
+        clickname = "click" + str(len(clickdict))
+        clickdict[clickname] = (x,y)
+
+        x1,y1 = x, y+aoisidelength+aoispacelength
+
+        cv2.circle(img, (x1+(aoisidelength//2),y1+(aoisidelength//2)), radius=5, color=(0, 0, 255), thickness=-1)
+
+        cv2.rectangle(img, (x1,y1), (x1+aoisidelength,y1+aoisidelength), color=(0, 0, 255), thickness=1)
+
+        # save click to dict, first name click ordinally, then assign tuple to click
+        clickname = "click" + str(len(clickdict))
+        clickdict[clickname] = (x1,y1)
+
+        x2,y2 = x1, y1+aoisidelength+aoispacelength
+        
+        cv2.circle(img, (x2+(aoisidelength//2),y2+(aoisidelength//2)), radius=5, color=(0, 0, 255), thickness=-1)
+
+        cv2.rectangle(img, (x2,y2), (x2+aoisidelength,y2+aoisidelength), color=(0, 0, 255), thickness=1)
+
+        # save click to dict, first name click ordinally, then assign tuple to click
+        clickname = "click" + str(len(clickdict))
+        clickdict[clickname] = (x2,y2)
+
         # cv2.rectangle(img, (x-81,y-81), (x+81,y+81), color=(0, 0, 255), thickness=5)
 
         # show image
         cv2.imshow('image', img)
 
-        # save click to dict, first name click ordinally, then assign tuple to click
-        clickname = "click" + str(len(clickdict))
-        clickdict[clickname] = (x,y)
+        
 
         
   
@@ -60,7 +88,8 @@ if __name__=="__main__":
 
     # let the user know how to label
     # print("Click at the center of where the ROI should be. \n Select ROIs left to right, up to down (starting from top left and ending at bottom right). \n")
-    print("Click at the top left corner of where the ROI should begin. \n Select ROIs left to right, up to down (starting from top left and ending at bottom right). \n")
+    #print("Click at the top left corner of where the ROI should begin. \n Select ROIs left to right, up to down (starting from top left and ending at bottom right). \n")
+    print("Click at the top left corner of where the column of ROIs should begin. \n Select ROI columns left to right (starting from top left). \n")
 
     # let the user know how to exit
     print("Exit by hitting any key on the keyboard.")
