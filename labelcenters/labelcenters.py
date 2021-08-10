@@ -1,6 +1,7 @@
 # importing the module
 import cv2
 import pandas as pd
+import readline
 
 # set global variable of click list to save to csv
 global clickdict
@@ -86,6 +87,9 @@ if __name__=="__main__":
     
     initials = input("Enter your initials: \n")
 
+    # allow tab completion when reading in filename
+    readline.set_completer_delims(' \t\n=')
+    readline.parse_and_bind("tab: complete")
     input_image = input("Enter the name of the image you'd like to label: \n")
 
     corb = input("Columnwise (1) or blockwise (0)? \n")
