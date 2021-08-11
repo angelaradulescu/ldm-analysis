@@ -1,7 +1,13 @@
+# Run this file in the commandline with your initials as the first argument
+# i.e. python labelcenters.py [initials]
+
+
+
 # importing the module
 import cv2
 import pandas as pd
 import readline
+import sys
 
 # set global variable of click list to save to csv
 global clickdict
@@ -85,7 +91,9 @@ def click_event(event, x, y, flags, params):
 # driver function
 if __name__=="__main__":
     
-    initials = input("Enter your initials: \n")
+    initials = str(sys.argv[1])
+
+    # initials = input("Enter your initials: \n")
 
     # allow tab completion when reading in filename
     readline.set_completer_delims(' \t\n=')
