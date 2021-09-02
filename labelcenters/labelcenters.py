@@ -1,9 +1,7 @@
 # Run this file in the commandline with your initials as the first argument
 # i.e. python labelcenters.py [initials]
 
-
-
-# importing the module
+# importing the modules
 import cv2
 import pandas as pd
 import readline
