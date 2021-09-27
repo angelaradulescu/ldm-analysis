@@ -1,5 +1,4 @@
 # importing the modules
-import cv2
 import pandas as pd
 import numpy
 import readline
