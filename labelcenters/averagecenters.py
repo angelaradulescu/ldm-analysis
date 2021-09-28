@@ -11,7 +11,7 @@ aoisidelength = 162
 aoispacelength = 1       
 
 
-# function that reads in two csvs with centers and averages the centers
+# function that reads in two csvs with top-left corners and averages out the centers
 # outputs a pandas df with all the averaged centers
 def average_centers(input_ar, input_nb):
     df_ar = pd.read_csv(input_ar)
@@ -21,8 +21,8 @@ def average_centers(input_ar, input_nb):
         df_average[clickname] = calculate_midpoint(point, df_nb[clickname])
     return df_average  
 
-# calculates midpoint between two points: x = (x1 + x2) / 2, y = (y1 + y2) / 2
-# returns integer value of coordinates
+# calculates midpoint between two top-left corners: x = (x1 + x2) / 2, y = (y1 + y2) / 2
+# returns integer value of coordinates of center of roi
 def calculate_midpoint(point1, point2):
     x = (point1[0] + point2[0])//2
     y = (point1[1] + point2[1])//2
