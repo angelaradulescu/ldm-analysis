@@ -75,7 +75,7 @@ def click_event(event, x, y, flags, params):
 
             # save click to dict, first name click ordinally, then assign tuple to click
             clickname = "click" + str(len(clickdict))
-            clickdict[clickname] = (x,y)
+            clickdict[clickname] = (x+(aoisidelength//2),y+(aoisidelength//2))
 
         # cv2.rectangle(img, (x-81,y-81), (x+81,y+81), color=(0, 0, 255), thickness=5)
 
@@ -88,10 +88,12 @@ def click_event(event, x, y, flags, params):
   
 # driver function
 if __name__=="__main__":
-    
-    initials = str(sys.argv[1])
 
-    # initials = input("Enter your initials: \n")
+    if len(sys.argv) < 2:
+        initials = input("Enter your initials: \n")
+    else:
+        # faster to have initials as argument
+        initials = str(sys.argv[1])
 
     # allow tab completion when reading in filename
     readline.set_completer_delims(' \t\n=')
