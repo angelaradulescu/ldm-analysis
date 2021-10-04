@@ -19,16 +19,13 @@ def average_centers(input_ar, input_nb):
     df_average = df_ar
     for (clickname, point) in df_ar.iteritems():
         df_average[clickname] = calculate_midpoint(df_ar[clickname], df_nb[clickname])
-    print(df_average)
     return df_average  
 
 # calculates midpoint between two top-left corners: x = (x1 + x2) / 2, y = (y1 + y2) / 2
 # returns integer value of coordinates of center of roi
 def calculate_midpoint(point1, point2):
     x = (point1[0] + point2[0])//2
-    print("x: ", str(x))
     y = (point1[1] + point2[1])//2
-    print("y: ", str(y))
     return [(x+(aoisidelength//2)),(y+(aoisidelength//2))]
         
   
@@ -65,8 +62,8 @@ if __name__=="__main__":
 
     # uncomment block to show image
     # # displaying the image with average rois overlayed
-    # cv2.imshow('image', img)
-    # cv2.waitKey(0)
+    cv2.imshow('image', img)
+    cv2.waitKey(0)
 
     # saving the dataframe 
     output_filename = input_name + "_average_centers"

@@ -19,9 +19,6 @@ def fixOverlap(file):
             if clickx != clicky:
                 distance = dist((df[clickx][0], df[clickx][1]), (df[clicky][0], df[clicky][1]))
                 difference = aoisidelength - distance
-                
-
-
 
 with open("overlapExists.txt", "r") as fileToRead:
   for line in fileToRead:
