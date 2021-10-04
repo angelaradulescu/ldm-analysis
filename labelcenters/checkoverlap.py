@@ -19,19 +19,21 @@ def checkOverlap(file):
             if clickx != clicky:
                 distance = dist((df[clickx][0], df[clickx][1]), (df[clicky][0], df[clicky][1]))
                 if distance < aoisidelength:
-                    return True
+                    return True, (aoisidelength - distance)
     return False
 
 
 
 # driver function
 if __name__=="__main__":
-
-    # allow tab completion when reading in filename
-    readline.set_completer_delims(' \t\n=')
-    readline.parse_and_bind("tab: complete")
-    fileToRead = input("Enter the name of the file whose overlap you'd like to check: \n")
+    if len(sys.argv) < 2:
+        # allow tab completion when reading in filename
+        readline.set_completer_delims(' \t\n=')
+        readline.parse_and_bind("tab: complete")
+        fileToRead = input("Enter the name of the file whose overlap you'd like to check: \n")
+    else:
+        fileToRead = sys.argv[1]
 
     overlapExists = checkOverlap(fileToRead)
-
-    print(overlapExists)
+    if overlapExists:
+        print(fileToRead + ": " + str(overlapExists))
