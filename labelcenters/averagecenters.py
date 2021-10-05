@@ -61,7 +61,7 @@ if __name__=="__main__":
         cv2.rectangle(img, ((x-(aoisidelength//2)),(y-(aoisidelength//2))), ((x+(aoisidelength//2)),(y+(aoisidelength//2))), color=(0, 0, 255), thickness=1)
 
     # uncomment block to show image
-    # # displaying the image with average rois overlayed
+    # displaying the image with average rois overlayed
     cv2.imshow('image', img)
     cv2.waitKey(0)
 
