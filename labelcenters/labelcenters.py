@@ -75,7 +75,9 @@ def click_event(event, x, y, flags, params):
 
             # save click to dict, first name click ordinally, then assign tuple to click
             clickname = "click" + str(len(clickdict))
-            clickdict[clickname] = (x+(aoisidelength//2),y+(aoisidelength//2))
+            clickdict[clickname] = (x,y)
+            # correct code:
+            # clickdict[clickname] = (x+(aoisidelength//2),y+(aoisidelength//2))
 
         # cv2.rectangle(img, (x-81,y-81), (x+81,y+81), color=(0, 0, 255), thickness=5)
 

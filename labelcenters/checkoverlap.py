@@ -19,7 +19,7 @@ def checkOverlap(file):
             if clickx != clicky:
                 distance = dist((df[clickx][0], df[clickx][1]), (df[clicky][0], df[clicky][1]))
                 if distance < aoisidelength:
-                    return True, (aoisidelength - distance)
+                    return True
     return False
 
 

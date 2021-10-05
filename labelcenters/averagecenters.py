@@ -55,7 +55,7 @@ if __name__=="__main__":
         x = point[0]
         y = point[1]
         # draw a circle over the center of the radius
-        cv2.circle(img, (x,y), radius=5, color=(0, 0, 255), thickness=1)
+        cv2.circle(img, (x,y), radius=5, color=(0, 0, 255), thickness=-1)
 
         # draw a rectangle the size of the ROI
         cv2.rectangle(img, ((x-(aoisidelength//2)),(y-(aoisidelength//2))), ((x+(aoisidelength//2)),(y+(aoisidelength//2))), color=(0, 0, 255), thickness=1)
