@@ -1,5 +1,7 @@
-# script that averages centers, checks overlap, and fixes overlap 
+# script that averages centers, checks overlap, and fixes overlap
+# input is whether or not you want to show images: 0 for yes 1 for no 
 # outputs final centers csvs and pngs to show
+
 # importing the modules
 import pandas as pd
 import numpy
@@ -15,13 +17,6 @@ import averagecenters
 import checkoverlap
 import fixoverlap
 
-global aoisidelength
-global aoispacelength
-
-aoisidelength = 162
-aoispacelength = 1   
-
-
     
 
 def main(show_image):
@@ -30,7 +25,8 @@ def main(show_image):
         if filename.endswith(".png") and ("labeled" not in filename) and ("centers" not in filename):
             print(filename)
             input_name = filename.split(".")[0]
-            df = averagecenters.main(filename, show_image)
+            # do not show original averaged images, so always 1
+            df = averagecenters.main(filename, 1)
             overlapExists = checkoverlap.checkOverlap(df)
             if overlapExists:
                 df_final = fixoverlap.fixOverlap(df)
@@ -38,9 +34,13 @@ def main(show_image):
                 df_final.to_csv(output_filename + '.csv', index=False)
             else:
                 df_final = df
+
+            #### saving image with rois and csvs with centers ###
+
             # reading the image
             img = cv2.imread(filename, 1)
 
+            # plot the average centers on the image
             averagecenters.plotCenters(img, df_final)
 
             # show images if desired
@@ -49,11 +49,11 @@ def main(show_image):
                 cv2.imshow('image', img)
                 cv2.waitKey(0)
 
-            # saving the dataframe 
+            # saving the final dataframe 
             output_filename = input_name + "_average_centers_final"
             df_final.to_csv(output_filename + '.csv', index=False) 
 
-            # save the image
+            # save the final image
             cv2.imwrite(output_filename + '.png', img)
 
 
