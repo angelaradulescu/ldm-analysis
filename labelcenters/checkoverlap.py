@@ -12,8 +12,7 @@ global aoispacelength
 aoisidelength = 162
 aoispacelength = 1
 
-def checkOverlap(file):
-    df = pd.read_csv(file)
+def checkOverlap(df):
     for clickx in df:
         for clicky in df:
             if clickx != clicky:
@@ -22,6 +21,12 @@ def checkOverlap(file):
                     return True
     return False
 
+def main(file):
+    df_average = pd.read_csv(file)
+    overlapExists = checkOverlap(df_average)
+    if overlapExists:
+        print(fileToRead + " has overlap.")
+    return overlapExists
 
 
 # driver function
@@ -33,7 +38,4 @@ if __name__=="__main__":
         fileToRead = input("Enter the name of the file whose overlap you'd like to check: \n")
     else:
         fileToRead = sys.argv[1]
-
-    overlapExists = checkOverlap(fileToRead)
-    if overlapExists:
-        print(fileToRead + ": " + str(overlapExists))
+    main(fileToRead)

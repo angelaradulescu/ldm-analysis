@@ -2,10 +2,4 @@ Sub53_block_8_average_centers.csv
 Sub69_block_2_average_centers.csv
 Sub63_block_3_average_centers.csv
 Sub38_average_centers.csv
-Sub27_block_1_average_centers.csv
-Sub28_block_4_average_centers.csv
-Sub28_block_2_average_centers.csv
-Sub35_block_4_average_centers.csv
 Sub35_block_10_average_centers.csv
-Sub55_block_9_average_centers.csv
-Sub30_block_4_average_centers.csv
