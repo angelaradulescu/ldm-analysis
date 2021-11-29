@@ -29,7 +29,9 @@ from scipy.stats import iqr
 import analysisHelperFunctions as ahf
 
 ## Define global variables ##
-et_data_dir = os.getcwd().strip('ldm-analysis') + 'ProcessedData/'# this expects ProcessedData to be one directory up from the analysis repo
+print(os.getcwd())
+et_data_dir = os.getcwd() + '/ProcessedData/'# this expects ProcessedData to be one directory up from the analysis repo
+print(et_data_dir)
 image_dir = os.getcwd().strip('ldm-analysis') + 'FinalStimuli/ByNumber/'
 
 ## Define screen metadata.

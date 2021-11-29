@@ -26,7 +26,7 @@ import ipywidgets as wdg
 from scipy.stats import iqr
 
 ## Define global variables ##
-et_data_dir = os.getcwd().strip('ldm-analysis') + 'ProcessedData/' # this expects ProcessedData to be one directory up from the analysis repo
+et_data_dir = os.getcwd() + '/ProcessedData/' # this expects ProcessedData to be one directory up from the analysis repo
 image_dir = os.getcwd().strip('ldm-analysis') + 'FinalStimuli/ByNumber/' # this expects FinalStimuli to be one directory up from the analysis repo
 raw_data_dir = os.getcwd().strip('ldm-analysis') + 'RawData/' # this expects RawData to be one directory up from the analysis repo
 
