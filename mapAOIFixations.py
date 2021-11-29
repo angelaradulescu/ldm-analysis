@@ -29,8 +29,9 @@ from scipy.stats import iqr
 import analysisHelperFunctions as ahf
 
 ## Define global variables ##
-et_data_dir = os.getcwd().strip('ldm-analysis') + 'ProcessedData/'# this expects ProcessedData to be one directory up from the analysis repo
-image_dir = os.getcwd().strip('ldm-analysis') + 'FinalStimuli/ByNumber/'
+et_data_dir = os.getcwd().strip('ldm-analysis') + 'ProcessedData/' # this expects ProcessedData to be one directory up from the analysis repo
+image_dir = os.getcwd().strip('ldm-analysis') + 'FinalStimuli/ByNumber/' # this expects FinalStimuli to be one directory up from the analysis repo
+raw_data_dir = os.getcwd().strip('ldm-analysis') + 'RawData/' # this expects RawData to be one directory up from the analysis repo
 
 ## Define screen metadata.
 xdim, ydim, n_screens = 1280, 1024, 1 
@@ -90,7 +91,7 @@ def makeFixationPlot(trial_featmap, fixations_block_trial, block_centers, indice
     return fig, ax
 
 
-def plotAOIFixations(subj_id, block, trial):
+def loadData(subj_id, block, trial):
     ## Load data.
     data, raw_pos_data, messages, sfreq = ahf.load_subj_data(subj_id)
 
@@ -128,41 +129,16 @@ def plotAOIFixations(subj_id, block, trial):
     fixations_block = fixations[fixations.BlockNumber == block]
     fixations_block_trial = fixations_block[fixations_block.Trial == (block-1)*n_trials_block + trial]
 
-    ## Initialize indices and labels of plot.
-    indices = np.zeros((xdim,ydim,n_screens))
-    labels = ()
-
-    ## Load all centers.
-    all_centers = pd.read_csv(os.getcwd() + '/allCenters.csv')
-
-    ## Subset this participant's centers. 
-    sub = 'Sub' + str(subj_id) + '_'
-    centers = all_centers[all_centers['Unnamed: 0'].str.contains(sub)]
-    centers['Block'] = [int(s.replace(sub + 'block' + '_', "")) for s in list(centers['Unnamed: 0'].values)]
-
-    # Grab block centers. 
-    block_centers = centers[centers['Block'] == int(block)]
-    for a in range(0, n_aois):
-        col_names = ['aoi' + str(a) + '_x', 'aoi' + str(a) + '_y']
-        this_aoi_centers = block_centers[col_names].iloc[0].values
-
-        # make array underlying screen using indices array with a different color for each aoi
-        isfrac = lambda v: True if v < 1 and v > 0 else False
-        xmin, xmax = [int(xdim * x) if isfrac(x) else int(x) for x in [this_aoi_centers[0]-aoisidelength//2, this_aoi_centers[0]+aoisidelength//2]]
-        ymin, ymax = [int(ydim * y) if isfrac(y) else int(y) for y in [this_aoi_centers[1]-aoisidelength//2, this_aoi_centers[1]+aoisidelength//2]]
-        
-        # set color equal to feature number
-        feat_num = int(this_trial_featmap[a])
-        indices[xmin:xmax,ymin:ymax,0] = feat_num
-        
-        # values, curr_indices = np.unique(indices, return_inverse=True)
-
-        # if np.all(values): curr_indices += 1
-        # indices = curr_indices.reshape(xdim, ydim, n_screens)
-        labels = tuple(range(1,int(n_aois)+1))
-
-    return makeFixationPlot(this_trial_featmap, fixations_block_trial, block_centers, indices, labels, xdim, ydim)
-
+    # Load subject log
+    log_file_path = raw_data_dir + 'Subj' + str(subj_id) + 'Log.mat'
+    log_mat = io.loadmat(log_file_path)
+    data = log_mat["Data"]
+    instructions = log_mat["Instructions"]
+    params = log_mat["Parms"]
+    print(params)
+    print(data)
+    print(instructions)
+    return
 # driver function
 if __name__=="__main__":
     if len(sys.argv) < 2:
@@ -173,6 +149,6 @@ if __name__=="__main__":
         sub_id = sys.argv[1]
         block_num = int(sys.argv[2])
         trial_num = int(sys.argv[3])
-    fig, ax = plotAOIFixations(sub_id, block_num, trial_num)
+    fig, ax = loadData(sub_id, block_num, trial_num)
     plt.draw()
     plt.show()
