@@ -140,34 +140,5 @@ def get_run_onsets(messages):
             
     return run_onsets
 
-def loadFixations(fixations, subj_id, n_blocks=10):
-    fixations = fixations.rename(columns={'Unnamed: 0': 'WithinBlockCount'})
-    
-    # split the fixations df based on block to get a list of indices when the block number changes
-    grouped = fixations.groupby(fixations.WithinBlockCount)
-    df_getindexes = grouped.get_group(0)
-    index_start_list = df_getindexes.index.values.tolist()
-    index_start_list.append(fixations.shape[0])
-    if index_start_list[0] != 0:
-        index_start_list.insert(0, 0)
-
-    # use list of indices to make a new column
-    new_col = np.ones((fixations.shape[0])).astype(int)
-
-    # make new column containing block number
-    # subj 39, block 4 is empty -- handle this
-    if subj_id == 39:
-        for block_num in np.arange(3):
-            new_col[index_start_list[block_num]:index_start_list[block_num+1]] = new_col[index_start_list[block_num]:index_start_list[block_num+1]]*(block_num+1)
-        for block_num in np.arange(4,n_blocks):
-            new_col[index_start_list[block_num-1]:index_start_list[block_num]] = new_col[index_start_list[block_num-1]:index_start_list[block_num]]*(block_num+1)
-    else: 
-        for block_num in np.arange(n_blocks):
-            new_col[index_start_list[block_num]:index_start_list[block_num+1]] = new_col[index_start_list[block_num]:index_start_list[block_num+1]]*(block_num+1)
-    
-    # add block number to fixations dataframe
-    fixations['BlockNumber'] = new_col
-    return fixations
-
 def getAgeMap(csvfile):
     return pd.read_csv(csvfile, index_col='Subj_id').Age
