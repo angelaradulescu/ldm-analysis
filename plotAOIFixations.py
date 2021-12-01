@@ -29,7 +29,7 @@ from scipy.stats import iqr
 import analysisHelperFunctions as ahf
 
 ## Define global variables ##
-et_data_dir = os.getcwd() + 'ProcessedData/' # this expects ProcessedData to be in the analysis repo
+et_data_dir = os.getcwd() + '/ProcessedData/' # this expects ProcessedData to be in the analysis repo
 image_dir = os.getcwd().strip('ldm-analysis') + 'FinalStimuli/ByNumber/'
 
 ## Define screen metadata.
@@ -122,10 +122,9 @@ def plotAOIFixations(subj_id, block, trial):
 
     # Load fixations for sub
     fixations = pd.read_csv(et_data_dir + str(subj_id) + 'fixations.csv')
-    fixations = ahf.loadFixations(fixations, subj_id)
 
     # grab fixations for block and trial
-    fixations_block = fixations[fixations.BlockNumber == block]
+    fixations_block = fixations[fixations.Block == block]
     fixations_block_trial = fixations_block[fixations_block.Trial == (block-1)*n_trials_block + trial]
 
     ## Initialize indices and labels of plot.
