@@ -62,7 +62,6 @@ def makeFixationPlot(trial_featmap, fixations_block_trial, block_centers, indice
 
         # Construct new colormap.
         cmap = ListedColormap(colors)
-
     ## Plotting.
     cbar = ax.imshow(indices[:,:,-1].T, cmap=cmap, aspect='auto', vmin=0, vmax=len(labels))
     fig.colorbar(cbar, cax, ticks=np.arange(len(cmap.colors)))
