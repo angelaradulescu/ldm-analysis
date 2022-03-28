@@ -1,5 +1,6 @@
 library(lattice)
 library(lme4)
+library(lmerTest)
 library(psycho)
 
 getwd()
@@ -9,9 +10,9 @@ print(data)
 
 ## Model. 
 m1 <- lmer(data = data, formula = Entropy ~ Age*LearnedFeat + (1|Subj))
-
-results <- analyze(m1)
 summary(m1)
-anova(m1)
+
+## Omnibus test. 
+car::Anova(m1, type = '3')
 
 
