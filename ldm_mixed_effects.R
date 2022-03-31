@@ -15,6 +15,10 @@ data <- read.csv('https://raw.githubusercontent.com/angelaradulescu/ldm-analysis
 # 
 # clean_feedback_data$age_group <- as.factor(clean_feedback_data$age_group)
 
+scale_this <- function(x){
+  (x - mean(x, na.rm=TRUE)) / sd(x, na.rm=TRUE)
+}
+
 #######Continunous Age#######
 
 ## Basic Mixed Model ## 
