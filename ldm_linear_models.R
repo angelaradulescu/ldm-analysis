@@ -68,7 +68,7 @@ adole_data <- model_data[model_data$Adult == 'False',]
 ### Fit 2 predictor variables ###
 
 ## Fit Trial and Age Group without interaction ##
-fit = lm(Entropy~WithinGameTrial+AgeGroup,data=model_data)
+fit = lm(Entropy~WithinGameTrial*AgeGroup,data=model_data)
 summary(fit)
 
 equation1=function(x){coef(fit)[2]*x+coef(fit)[1]}
@@ -94,7 +94,7 @@ ggplot(model_data,aes(y=Entropy,x=WithinGameTrial,color=LearnedGame))+geom_point
 ggPredict(fit1,se=TRUE,interactive=TRUE)
 
 ### Fit 3 predictor variables, with and without interaction ##
-fit2 = lm(Entropy~WithinGameTrial*LearnedGame+AgeGroup,data=model_data)
+fit2 = lm(Entropy~WithinGameTrial*LearnedGame*AgeGroup,data=model_data)
 summary(fit2)
 
 equation1_2=function(x){coef(fit2)[2]*x+coef(fit2)[1]}

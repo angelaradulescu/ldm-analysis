@@ -36,8 +36,11 @@ model_data <- data %>%
 
 ## Basic Mixed Model ## 
 ## just Age*LearnedGame as fixed effects Subj as random effect. ##
-m1 <- lmer(data = model_data, formula = Entropy ~ scaled_age*LearnedGame + (1|subject_id))
-summary(m1)
+m1a <- lmer(data = model_data, formula = Entropy ~ AgeGroup*LearnedGame + (1|subject_id/LearnedGame))
+summary(m1a)
+
+m1b <- lmer(data = model_data, formula = Entropy ~ AgeGroup*WithinGameTrial + (1|subject_id))
+summary(m1b)
 
 ## Omnibus test. 
 car::Anova(m1, type = '3')
