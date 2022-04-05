@@ -8,7 +8,7 @@ library(magrittr) # needs to be run every time you start R and want to use %>%
 library(dplyr)    # alternatively, this also loads %>%
 
 ##################### Import Data #####################
-data <- read.csv('/Users/angelaradulescu/Dropbox/NYU/Research/LDM/ldm-analysis/ProcessedData/Feedback_Processed_CombinedBehavioralEyetrackingData.csv')
+data <- read.csv('https://raw.githubusercontent.com/angelaradulescu/ldm-analysis/main/ProcessedData/Feedback_Processed_CombinedBehavioralEyetrackingData.csv')
 head(data, 10)
 
 # Clean data if needed
@@ -32,21 +32,24 @@ model_data <- data %>%
          subject_id = as.factor(Subj),
          age_group = as.factor(AgeGroup))
 
+
+# make new AlignedTrial value and LearnedYet value containing whether trial is pre- or post- PoL
+# learning_trials <- model_data[model_data$LearnedGame == 'True',]
+# learning_trials$AlignedTrial = learning_trials$WithinGameTrial - learning_trials$PoL
+model_data$AlignedTrial = model_data$WithinGameTrial - model_data$PoL
+model_data$LearnedYet = model_data$AlignedTrial > 0
+model_data %<>% mutate(learned_yet = as.factor(LearnedYet))
+
 #####################Continunous Age + Game-wise Learned Parameter#####################
 
 ## Basic Mixed Model ## 
 ## just Age*LearnedGame as fixed effects Subj as random effect. ##
-m1a <- lmer(data = model_data, formula = Entropy ~ AgeGroup*LearnedGame + (1|subject_id/LearnedGame))
-summary(m1a)
-
-m1b <- lmer(data = model_data, formula = Entropy ~ AgeGroup*WithinGameTrial + (1|subject_id))
-summary(m1b)
+m1 <- lmer(data = model_data, formula = Entropy ~ scaled_age*LearnedGame + (1|subject_id))
+summary(m1)
 
 ## Omnibus test. 
 car::Anova(m1, type = '3')
 
-## Plot effects.
-sjPlot::plot_model(m1, type = 'int')
 
 ## More Mixed Model ## 
 ## Age*WithinGameTrial*Game*LearnedGame as fixed effects Subj as random effect. ##
@@ -79,12 +82,6 @@ summary(m4)
 car::Anova(m4, type = '3')
 
 #####################Continunous Age, separated by PoL##########################
-
-# make new AlignedTrial value and LearnedYet value containing whether trial is pre- or post- PoL
-# learning_trials <- model_data[model_data$LearnedGame == 'True',]
-# learning_trials$AlignedTrial = learning_trials$WithinGameTrial - learning_trials$PoL
-model_data$AlignedTrial = model_data$WithinGameTrial - model_data$PoL
-model_data$LearnedYet = model_data$AlignedTrial > 0
 
 ## Basic Mixed Model ## 
 ## just Age as fixed effect and Subj as random effect. ##
@@ -125,6 +122,18 @@ car::Anova(m4, type = '3')
 
 ############################ Categorical Age ###################################
 
+m1a <- lmer(data = model_data, formula = Entropy ~ AgeGroup*LearnedGame + (1|subject_id/LearnedGame))
+summary(m1a)
+
+m1b <- lmer(data = model_data, formula = Entropy ~ AgeGroup*WithinGameTrial + (1|subject_id))
+summary(m1b)
+
+## Omnibus test. 
+car::Anova(m1, type = '3')
+
+## Plot effects.
+sjPlot::plot_model(m1, type = 'int')
+
 ## Basic Mixed Model ## 
 ## just Age*LearnedGame as fixed effects Subj as random effect. ##
 m1 <- lmer(data = model_data, formula = Entropy ~ age_group*LearnedGame + (1|subject_id))
@@ -141,6 +150,53 @@ summary(m2)
 
 ## Omnibus test. 
 car::Anova(m2, type = '3')
+
+##################### Categorical Age, separated by PoL##########################
+
+## Basic Mixed Model ## 
+## just Age as fixed effect and Subj as random effect. ##
+m1 <- lmer(data = model_data, formula = Entropy ~ age_group*learned_yet + (1|subject_id))
+summary(m1)
+
+## Omnibus test. 
+car::Anova(m1, type = '3')
+
+## More Mixed Model ## 
+## Age*WithinGameTrial*Game*LearnedGame as fixed effects Subj as random effect, with WithinGameTrial nested##
+
+m2 <- lmer(data = model_data, formula = Entropy ~ age_group*WithinGameTrial*Game*learned_yet + (1|subject_id/WithinGameTrial))
+summary(m2)
+
+## Omnibus test. 
+car::Anova(m2, type = '3')
+
+## Plot effects.
+sjPlot::plot_model(m2, type = 'int')
+
+equation1=function(x){coef(m2)[2]*x+coef(m2)[1]}
+equation2=function(x){coef(m2)[2]*x+coef(m2)[1]+coef(m2)[3]}
+
+ggplot(model_data,aes(y=Entropy,x=WithinGameTrial,color=AgeGroup))+geom_point()+
+  stat_function(fun=equation1,geom="line",color=scales::hue_pal()(2)[1])+
+  stat_function(fun=equation2,geom="line",color=scales::hue_pal()(2)[2])
+
+## Even More Mixed Model ## 
+## Age*AlignedTrial*Game*LearnedYet as fixed effects that act on Subj as random effect. ##
+## Fitting this model resulted in singularity of the model. FMI: enter ?isSingular in console
+
+m3 <- lmer(data = model_data, formula = Entropy ~ scaled_age*AlignedTrial*Game*LearnedYet + ((AlignedTrial * (Game+LearnedYet))|subject_id))
+summary(m3)
+
+## Omnibus test. 
+car::Anova(m3, type = '3')
+
+### Mixed Model Playground (trying out different things) ###
+
+m4 <- lmer(data = model_data, formula = Entropy ~ scaled_age*(WithinGameTrial + Game) + ((WithinGameTrial + Game)|subject_id))
+summary(m4)
+
+## Omnibus test. 
+car::Anova(m4, type = '3')
 
 
 ############### DUMP #############################################
