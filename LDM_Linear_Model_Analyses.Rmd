@@ -2,7 +2,10 @@
 title: "Linear (Mixed Effects) Models for LDM"
 author: "Naiti S. Bhatt"
 date: "4/18/2022"
-output: html_document
+output: 
+  pdf_document: default
+  html_document: default
+always_allow_html: true
 ---
 
 ```{r setup, include=FALSE}
