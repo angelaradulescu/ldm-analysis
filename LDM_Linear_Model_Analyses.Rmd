@@ -1,0 +1,210 @@
+---
+title: "Linear (Mixed Effects) Models for LDM"
+author: "Naiti S. Bhatt"
+date: "4/18/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# Load needed libraries
+library(tidyverse)
+library(glue)
+library(magrittr) # needs to be run every time you start R and want to use %>%
+library(afex)
+library(knitr)
+library(kableExtra)
+library(broom)
+library(lattice)
+library(lme4)
+library(lmerTest)
+library(psycho)
+library(dplyr)    # alternatively, this also loads %>%
+require(ggiraph)
+require(ggiraphExtra)
+# scale function (z-score)
+scale_this <- function(x){
+  (x - mean(x, na.rm=TRUE)) / sd(x, na.rm=TRUE)
+}
+```
+
+## Age-IQ Analysis
+
+First, we run a simple linear model to see if there is an effect of age on WASI score (IQ). We regress WASI Score (IQ) on continuous age and see no significant correlation.
+
+```{r age_iq_analysis, echo = FALSE}
+# run wasi iq analysis
+age_iq_data <- read.csv('https://raw.githubusercontent.com/angelaradulescu/ldm-analysis/main/ProcessedData/ageIQMap.csv')
+
+age_iq_data %<>%
+  mutate(age_scaled = scale_this(Age),
+         iq_scaled = scale_this(IQ))
+
+print(lm(IQ ~ Age, age_iq_data) %>% tidy())
+
+ggplot(age_iq_data, aes(x=Age, y=IQ)) + 
+  geom_point()+
+  geom_smooth(method=lm) +
+  ggtitle("IQ over Age") 
+```
+
+## Look at Learning over Age
+
+Next, we run a simple linear model to see if there is an effect of age on the number of games that a subject has learned. We compute number of games learned as the number of games that a subject's point of learning (100% accuracy in all subsequent trials) is before the 15th trial. We regress the sum stored in GamesLearned on continuous age and see no significant correlation.
+
+
+```{r learning_age_analysis, echo = FALSE}
+behav_data <- read.csv('https://raw.githubusercontent.com/angelaradulescu/ldm-analysis/main/ProcessedData/CleanedProcessedBehavioralData.csv')
+
+sub_summary <- behav_data %>% 
+  select(Subj, Age, LearnedGame, PoL) %>%
+  unique() %>% 
+  group_by(Subj,Age) %>% 
+  mutate(LearnedGame = as.logical(LearnedGame)) %>%
+  summarize(GamesLearned = sum(LearnedGame)) %>%
+  ungroup()
+
+sub_summary$age_scaled <- scale_this(sub_summary$Age)
+
+print(lm(GamesLearned ~ Age, sub_summary) %>% tidy())
+
+ggplot(sub_summary, aes(x=Age, y=GamesLearned)) + 
+  geom_point()+
+  geom_smooth(method=lm) +
+  ggtitle("Games Learned over Age") 
+```
+
+## Linear Models using Feedback data and Entropy as target variable
+
+To get at the interactions we're interested in, we first run simple linear models with fixed effects to create plots with the interactions that we saw during visualizations
+
+First, we'll look at `Entropy ~ WithinGameTrial + AgeGroup`.
+```{r read_data}
+data <- read.csv('https://raw.githubusercontent.com/angelaradulescu/ldm-analysis/main/ProcessedData/Feedback_Processed_CombinedBehavioralEyetrackingData.csv')
+
+model_data <- data %>% 
+  select(Subj, Entropy, Age, AgeGroup, WithinGameTrial, Game, LearnedGame, Learned, IQ, PoL) %>% 
+  mutate(scaled_age = scale_this(Age),
+         scaled_iq = scale_this(IQ),
+         subject_id = as.factor(Subj),
+         age_group = as.factor(AgeGroup))
+
+
+# make new AlignedTrial value and LearnedYet value containing whether trial is pre- or post- PoL
+model_data$AlignedTrial = model_data$WithinGameTrial - model_data$PoL
+model_data$LearnedYet = model_data$AlignedTrial > 0
+model_data %<>% mutate(learned_yet = as.factor(LearnedYet))
+
+```
+
+```{r basic_lm,  echo = FALSE}
+fit = lm(Entropy~WithinGameTrial+age_group,data=model_data)
+summary(fit)
+
+ggPredict(fit,se=TRUE,interactive=TRUE)
+```
+
+Next, we'll look at the interaction: `Entropy ~ WithinGameTrial * AgeGroup`.
+```{r basic_interaction_lm,  echo = FALSE}
+fit1 = lm(Entropy~WithinGameTrial*age_group,data=model_data)
+summary(fit1)
+
+ggPredict(fit1,se=TRUE,interactive=TRUE)
+```
+
+Next, we'll add the interaction of trial and whether or not the game was learned and add age group: `Entropy ~ WithinGameTrial*LearnedGame+AgeGroup`.
+```{r target_interaction_lm,  echo = FALSE}
+fit2 = lm(Entropy~WithinGameTrial*LearnedGame+age_group,data=model_data)
+summary(fit2)
+
+ggPredict(fit2,se=TRUE,interactive=TRUE)
+```
+
+Finally, we'll model the interaction of trial and whether or not the game was learned and age group: `Entropy ~ WithinGameTrial*LearnedGame*AgeGroup`.
+```{r total_interaction_lm,  echo = FALSE}
+fit2 = lm(Entropy~WithinGameTrial*LearnedGame*age_group,data=model_data)
+summary(fit2)
+
+ggPredict(fit2,se=TRUE,interactive=TRUE)
+```
+
+## Linear Mixed Effects Models using Feedback data and Entropy as target variable
+
+Now, using the **lme4** package and **lmer** function, we'll make linear mixed effects models using Entropy as the target variable.
+
+Our most basic model is `Entropy ~ WithinGameTrial*AgeGroup + (1|Subject)`
+
+```{r most_basic_lmem, echo = FALSE}
+m0 <- lmer(data = model_data, formula = Entropy ~ WithinGameTrial*age_group + (1|subject_id))
+summary(m0)
+
+## Omnibus test. 
+car::Anova(m0, type = '3')
+
+## Plot effects.
+sjPlot::plot_model(m0, type = 'int')
+
+```
+
+
+Next, we model `Entropy ~ WithinGameTrial*LearnedGame*AgeGroup + (1|Subject)`
+
+```{r basic_lmem, echo = FALSE}
+m1 <- lmer(data = model_data, formula = Entropy ~ WithinGameTrial*LearnedGame*age_group + (1|subject_id))
+summary(m1)
+
+## Omnibus test. 
+car::Anova(m1, type = '3')
+
+## Plot effects.
+sjPlot::plot_model(m1, type = 'int')
+
+```
+
+Next, we model `Entropy ~ WithinGameTrial*Game*LearnedGame*AgeGroup + (1|Subject)`
+
+```{r more_lmem, echo = FALSE}
+m2 <- lmer(data = model_data, formula = Entropy ~ WithinGameTrial*Game*LearnedGame*age_group + (1|subject_id))
+summary(m2)
+
+## Omnibus test. 
+car::Anova(m2, type = '3')
+
+## Plot effects.
+sjPlot::plot_model(m2, type = 'int')
+
+```
+
+
+`LearnedGame` stores whether or not participants got 100% accuracy on the last 5 trials. We want to tease apart the "learning trials," or the trials before the point of learning (100% accuracy on all subsequent trials) from the "learned trials", after the point of learning. So, we'll replace `LearnedGame` with `LearnedYet`, a factorized boolean that stores whether or not the trial is after the point of learning for a given game.
+
+To just tease this effect apart, we model `Entropy ~ WithinGameTrial*LearnedYet*AgeGroup + (1|Subject)`
+
+```{r basic_pol_lmem, echo = FALSE}
+m3 <- lmer(data = model_data, formula = Entropy ~  WithinGameTrial*learned_yet*age_group + (1|subject_id))
+summary(m3)
+
+## Omnibus test. 
+car::Anova(m3, type = '3')
+
+## Plot effects.
+sjPlot::plot_model(m3, type = 'int')
+
+```
+
+
+Next, we fully model `Entropy ~ WithinGameTrial*Game*LearnedYet*AgeGroup + (1|Subject)`
+
+```{r pol_lmem, echo = FALSE}
+m4 <- lmer(data = model_data, formula = Entropy ~  WithinGameTrial*Game*learned_yet*age_group + (1|subject_id))
+summary(m4)
+
+## Omnibus test. 
+car::Anova(m4, type = '3')
+
+## Plot effects.
+sjPlot::plot_model(m4, type = 'int')
+
+```
+
+
