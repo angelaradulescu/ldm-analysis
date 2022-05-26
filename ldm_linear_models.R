@@ -68,7 +68,7 @@ adole_data <- model_data[model_data$Adult == 'False',]
 ### Fit 2 predictor variables ###
 
 ## Fit Trial and Age Group without interaction ##
-fit = lm(Entropy~WithinGameTrial*AgeGroup,data=model_data)
+fit = lm(Entropy~LearnedGame*AgeGroup,data=model_data)
 summary(fit)
 
 equation1=function(x){coef(fit)[2]*x+coef(fit)[1]}
