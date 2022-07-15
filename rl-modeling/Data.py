@@ -23,8 +23,8 @@ class Data(object):
         self.n_games = max(behav_data['Game'])
         self.game_length = len(behav_data.loc[(behav_data['Game'] == 1)])
 
-        ## Add trial-within-game variable.
-        self.behav_data['Trial_2'] = self.behav_data['Trial'] - (self.behav_data['Game']-1)*self.game_length
+        # ## Add trial-within-game variable.
+        # self.behav_data['Trial_2'] = self.behav_data['Trial'] - (self.behav_data['Game']-1)*self.game_length
 
     def split_data(self, test_game):
         """ Splits behavioral data into training data (n-1 games) and test data (1 game).
@@ -56,7 +56,7 @@ def extract_vars(behav_data, trials):
 
     ## Mark whether game was learned. 
     point_of_learning = behav_data.loc[behav_data['Trial'].isin(trials)]['PoL'].values[0]
-    if point_of_learning < 16: learned = 1
+    if point_of_learning < 15: learned = 1
     else: learned = 0 
  
     ## Mark chosen action. 
